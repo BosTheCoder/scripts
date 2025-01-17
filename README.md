@@ -1,4 +1,4 @@
-# Daily Coding Problem
+# Scripts Make the World Go Round 🌍
 
 This project is a collection of random scripts I use for daily life (often in conjuction with zapier & AWS)
 
