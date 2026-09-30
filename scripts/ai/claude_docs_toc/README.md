@@ -4,7 +4,7 @@ A tiny Chrome extension that adds a collapsible **Contents** panel to Claude Doc
 
 ## Install (Chrome, Edge, Brave)
 
-1. Open `chrome://extensions` and turn on **Developer mode**.
+1. Open `edge://extensions` (or `chrome://extensions`) and turn on **Developer mode**. In Edge it's in the left sidebar.
 2. Click **Load unpacked** and choose this folder. From Windows, the WSL path is:
    `\\wsl.localhost\Ubuntu-24.04\home\bosire\projects\personal\scripts\scripts\ai\claude_docs_toc`
 3. Reload any open Claude Doc.
