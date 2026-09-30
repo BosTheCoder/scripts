@@ -15,3 +15,6 @@ tmp/
 **/.env.test.local
 **/.env.production.local
 
+
+# Node (e.g. playwright-core for check scripts)
+node_modules/

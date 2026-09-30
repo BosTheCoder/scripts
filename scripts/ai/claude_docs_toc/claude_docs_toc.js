@@ -1,19 +1,12 @@
-// ==UserScript==
-// @name         Claude Docs floating table of contents
-// @namespace    https://github.com/BosTheCoder/scripts
-// @version      1.0
-// @description  Floating, collapsible table of contents for Claude Docs. Click to jump; highlights the section you're in.
-// @match        https://*.claudeusercontent.com/*
-// @downloadURL  https://raw.githubusercontent.com/BosTheCoder/scripts/main/scripts/ai/claude_docs_toc/claude_docs_toc.user.js
-// @updateURL    https://raw.githubusercontent.com/BosTheCoder/scripts/main/scripts/ai/claude_docs_toc/claude_docs_toc.user.js
-// @run-at       document-idle
-// @grant        none
-// ==/UserScript==
-
-// A Claude Doc renders inside an iframe on <doc-id>.frame.claudeusercontent.com,
-// so this runs in that frame, not on claude.ai. The doc body is a Tiptap
-// (ProseMirror) editor whose headings are real <h1>-<h3> elements. Pages with
-// no .ProseMirror (every other artifact) are left alone.
+// Content script for the Claude Docs TOC extension (see manifest.json).
+//
+// claude.ai -> iframe <doc-id>.frame.claudeusercontent.com (the viewer)
+//           -> iframe about:srcdoc, sandbox="allow-scripts" (the editor)
+// The editor is a Tiptap (ProseMirror) document with real <h1>-<h3>, and it
+// scrolls its own window. Its opaque origin and about:srcdoc URL are why this
+// can't be a userscript: Violentmonkey skips such frames, while an extension
+// reaches them with match_origin_as_fallback. Frames with no .ProseMirror
+// (the viewer, every other artifact) are left alone.
 (() => {
   const ID = 'cd-toc';
   const LEVELS = 'h1, h2, h3';
@@ -67,11 +60,23 @@
     nav = Object.assign(document.createElement('nav'), { id: ID });
     nav.setAttribute('aria-label', 'Table of contents');
     head = nav.appendChild(document.createElement('button'));
-    head.onclick = () => toggle();
+    head.onclick = () => {
+      chosen = true;
+      toggle();
+    };
     list = nav.appendChild(document.createElement('ol'));
     document.body.append(nav);
-    toggle(innerWidth >= 1100);
+    autoOpen();
   };
+
+  // Open on wide screens. The editor frame can still be 0px wide when this
+  // first runs, so re-decide on resize until the user picks for themselves.
+  let chosen = false;
+  const autoOpen = () => nav && !chosen && toggle(innerWidth >= 1100);
+  addEventListener('resize', () => {
+    autoOpen();
+    spy();
+  });
 
   // Match the doc's own colours so it follows the viewer's light/dark theme.
   const paint = (ed) => {
@@ -83,9 +88,12 @@
 
   const spy = () => {
     if (!list) return;
+    // Headings near the end can't scroll up to the top; at the bottom, the last visible one wins.
+    const bottom = scrollY > 0 && innerHeight + scrollY >= document.documentElement.scrollHeight - 2;
     let cur = 0;
     headings.forEach((h, i) => {
-      if (h.getBoundingClientRect().top <= OFFSET + 8) cur = i;
+      const top = h.getBoundingClientRect().top;
+      if (top <= OFFSET + 8 || (bottom && top < innerHeight)) cur = i;
     });
     list.querySelectorAll('button').forEach((b, i) => b.classList.toggle('on', i === cur));
   };

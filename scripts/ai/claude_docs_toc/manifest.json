@@ -1,0 +1,15 @@
+{
+  "manifest_version": 3,
+  "name": "Claude Docs table of contents",
+  "version": "1.1",
+  "description": "Floating, collapsible table of contents for Claude Docs. Click to jump; highlights the section you're in.",
+  "content_scripts": [
+    {
+      "matches": ["https://*.claudeusercontent.com/*"],
+      "js": ["claude_docs_toc.js"],
+      "all_frames": true,
+      "match_origin_as_fallback": true,
+      "run_at": "document_idle"
+    }
+  ]
+}
