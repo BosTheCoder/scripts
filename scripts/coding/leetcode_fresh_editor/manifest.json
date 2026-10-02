@@ -1,0 +1,14 @@
+{
+  "manifest_version": 3,
+  "name": "LeetCode Fresh Editor",
+  "version": "1.0",
+  "description": "Open every LeetCode problem on the default template, not your old synced code.",
+  "content_scripts": [
+    {
+      "matches": ["https://leetcode.com/*"],
+      "js": ["leetcode_fresh_editor.user.js"],
+      "run_at": "document_start",
+      "world": "MAIN"
+    }
+  ]
+}
